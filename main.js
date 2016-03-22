@@ -12,16 +12,18 @@ var deltaRealTime = 0;
 var currentGameTime = 0;
 var dt = 0; //Delta Game Time
 
-//User Interface
-var dtHistory = [];
-for (var i=0; i<50; i++){
-	dtHistory.unshift(0);
+//Returns an array filled with count items of the specified value.
+function filledArray(count, value) {
+	var array = [];
+	for (var i=0; i<count; i++) {
+		array[i] = value;
+	}
+	return array;
 }
 
-var dRTHistory = [];
-for (var i=0; i<50; i++){
-	dRTHistory.unshift(0);
-}
+//These arrays are used for graphing the framerate.
+var dtHistory = filledArray(50, 0);
+var dRTHistory = filledArray(50, 0);
 
 //HTML Buttons and Stuff
 var paused = false;
