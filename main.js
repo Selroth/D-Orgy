@@ -10,12 +10,12 @@ var dt = 0; //Delta Game Time
 
 //User Interface
 var dtHistory = [];
-for (i=0; i<50; i++){
+for (var i=0; i<50; i++){
 	dtHistory.unshift(0);
 }
 
 var dRTHistory = [];
-for (i=0; i<50; i++){
+for (var i=0; i<50; i++){
 	dRTHistory.unshift(0);
 }
 
@@ -160,7 +160,7 @@ function draw(){
 	dctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
 	dctx.moveTo(10, 10);
 	j = 0;
-	for (i=0; i<dRTHistory.length; i++){
+	for (var i=0; i<dRTHistory.length; i++){
 		dctx.moveTo(10+i, 50);
 		dctx.lineTo(10+i, 50-(1000/dRTHistory[i])/2);
 		j += dRTHistory[i];
@@ -173,7 +173,7 @@ function draw(){
 	dctx.strokeStyle = "rgba(128, 0, 128, 0.8)";
 	dctx.moveTo(10, 60);
 	j = 0;
-	for (i=0; i<dtHistory.length; i++){
+	for (var i=0; i<dtHistory.length; i++){
 		dctx.moveTo(10+i, 100);
 		dctx.lineTo(10+i, 100-dtHistory[i]/2);
 		j += dtHistory[i];
@@ -193,7 +193,7 @@ function draw(){
 	dctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
 	dctx.moveTo(10, 110);
 	dctx.lineTo(10, 410);
-	for (i=0; i<29; i++){
+	for (var i=0; i<29; i++){
 		y = 120 + (10 * i) - (currentGameTime % 1000)/100;
 		dctx.moveTo(5, y);
 		dctx.lineTo(15, y);
@@ -202,7 +202,7 @@ function draw(){
 	
 	dctx.beginPath(); //Event ticks
 	dctx.strokeStyle = "rgba(0, 0, 255, 0.8)";
-	for (i=0; i<timeLine.length; i++){
+	for (var i=0; i<timeLine.length; i++){
 		y = 110 + (timeLine[i].time-currentGameTime)/100
 		dctx.moveTo(2, y);
 		dctx.lineTo(25, y);
