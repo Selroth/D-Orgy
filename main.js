@@ -1,7 +1,11 @@
-var cvs;
-var ctx;
+var page = {
+	canvas: null,
+	dPanel: null,
+	game: {
+		timeLine: []
+	}
+};
 
-var timeLine = [];
 var currentRealTime = 0;
 var lastRealTime = 0;
 var deltaRealTime = 0;
@@ -63,12 +67,12 @@ function particle(mass, radius){
 }
 function checkTimeLine(pTime){
 	//make sure it's an event we're looking at, else purge it till we arrive to an event or exhause the timeline
-	while( !(timeLine[0] instanceof event) && timeLine.length > 0){			
-		var junk = timeLine.shift();
+	while( !(page.game.timeLine[0] instanceof event) && page.game.timeLine.length > 0){
+		var junk = page.game.timeLine.shift();
 		debugger;
 	}
-	if (timeLine.length > 0){
-		if (pTime >= timeLine[0].time) {	
+	if (page.game.timeLine.length > 0){
+		if (pTime >= page.game.timeLine[0].time) {
 			return true;
 		}	
 	}
@@ -84,7 +88,7 @@ function nextFrame(){
 		dt = 0; 
 	}else{
 		//Have we arrived at any timeline events?
-		if(checkTimeLine(currentGameTime + deltaRealTime)){ dt = timeLine[0].time - currentGameTime;
+		if(checkTimeLine(currentGameTime + deltaRealTime)){ dt = page.game.timeLine[0].time - currentGameTime;
 			}else{ 											dt = deltaRealTime; }
 		
 		currentGameTime += dt;
@@ -95,11 +99,11 @@ function nextFrame(){
 	dRTHistory.pop();
 
 	while(checkTimeLine(currentGameTime)){
-		var currentEvent = timeLine.shift();
+		var currentEvent = page.game.timeLine.shift();
 		currentEvent.func(currentEvent.para);
 	}
-	
-	ball.tick(dt);
+
+	page.game.ball.tick(dt);
 	update();
 	draw();
 	requestAnimationFrame(nextFrame);
@@ -108,28 +112,28 @@ function nextFrame(){
 
 function collision(hitObject){
 	if (hitObject != undefined){
-		x = ball.getXVel();
-		y = ball.getYVel();
-		if (hitObject == "left wall" || hitObject == "right wall") x = ball.getXVel() * -1;
-		if (hitObject == "top wall" || hitObject == "bottom wall") y = ball.getYVel() * -1;
-		ball.setVel(x, y);
+		x = page.game.ball.getXVel();
+		y = page.game.ball.getYVel();
+		if (hitObject == "left wall" || hitObject == "right wall") x = page.game.ball.getXVel() * -1;
+		if (hitObject == "top wall" || hitObject == "bottom wall") y = page.game.ball.getYVel() * -1;
+		page.game.ball.setVel(x, y);
 	}
 	
 	//find the next collision, if we're moving.
-	if (ball.getXVel() != 0 || ball.getYVel() != 0){
-		dx = (ball.getXVel() < 0) ? ball.getXPos() : 600 - ball.getXPos();
-		dxWall = (ball.getXVel() < 0) ? "left wall" : "right wall";
-		dy = (ball.getYVel() < 0) ? ball.getYPos() : 400 - ball.getYPos();
-		dyWall = (ball.getYVel() < 0) ? "top wall" : "bottom wall";
-		tx = Math.round(dx/Math.abs(ball.getXVel()));
-		ty = Math.round(dy/Math.abs(ball.getYVel()));
+	if (page.game.ball.getXVel() != 0 || page.game.ball.getYVel() != 0){
+		dx = (page.game.ball.getXVel() < 0) ? page.game.ball.getXPos() : 600 - page.game.ball.getXPos();
+		dxWall = (page.game.ball.getXVel() < 0) ? "left wall" : "right wall";
+		dy = (page.game.ball.getYVel() < 0) ? page.game.ball.getYPos() : 400 - page.game.ball.getYPos();
+		dyWall = (page.game.ball.getYVel() < 0) ? "top wall" : "bottom wall";
+		tx = Math.round(dx/Math.abs(page.game.ball.getXVel()));
+		ty = Math.round(dy/Math.abs(page.game.ball.getYVel()));
 		t = (tx < ty) ? tx : ty;
 		hitWall = (tx < ty) ? dxWall : dyWall;
 		
 		if (t > 0){
 			var nextCollision = new event(t + currentGameTime, collision, hitWall, "collision", false);
-			timeLine.push(nextCollision);
-			timeLine.sort(function (a, b){ return a.time - b.time; });
+			page.game.timeLine.push(nextCollision);
+			page.game.timeLine.sort(function (a, b){ return a.time - b.time; });
 		}
 	}
 }
@@ -137,24 +141,27 @@ function collision(hitObject){
 function update(){
 	
 	var m = 0.003;
-	var a = Math.atan2(ball.getYPos() - dragon.getYPos(), ball.getXPos() - dragon.getXPos())
-	
+	var a = Math.atan2(page.game.ball.getYPos() - page.game.dragon.getYPos(), page.game.ball.getXPos() - page.game.dragon.getXPos())
+
 	x = m*Math.cos(a);
 	y = m*Math.sin(a);
-	dragon.setAcc(x, y);
-	
-	dragon.tick(dt);
-	
+	page.game.dragon.setAcc(x, y);
+
+	page.game.dragon.tick(dt);
+
 }
 
 function draw(){
 
+	var ctx = page.canvas.getContext("2d");
+	var dctx = page.dPanel.getContext("2d");
+
 	//Start with a clean plate
 	if (cleanBlit){
-		ctx.clearRect(0, 0, cvs.width, cvs.height);
+		ctx.clearRect(0, 0, page.canvas.width, page.canvas.height);
 	}
-	dctx.clearRect(0, 0, dcvs.width, dcvs.height);
-	
+	dctx.clearRect(0, 0, page.dPanel.width, page.dPanel.height);
+
 	//Draw the FPS chart
 	dctx.beginPath();
 	dctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
@@ -202,24 +209,24 @@ function draw(){
 	
 	dctx.beginPath(); //Event ticks
 	dctx.strokeStyle = "rgba(0, 0, 255, 0.8)";
-	for (var i=0; i<timeLine.length; i++){
-		y = 110 + (timeLine[i].time-currentGameTime)/100
+	for (var i=0; i<page.game.timeLine.length; i++){
+		y = 110 + (page.game.timeLine[i].time-currentGameTime)/100
 		dctx.moveTo(2, y);
 		dctx.lineTo(25, y);
 		dctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-		dctx.fillText(timeLine[i].desc + ": " + timeLine[i].para, 25, y);
+		dctx.fillText(page.game.timeLine[i].desc + ": " + page.game.timeLine[i].para, 25, y);
 	}
 	dctx.stroke();
 	
 	//Draw ball
 	ctx.beginPath();
-	ctx.arc(ball.getXPos(), ball.getYPos(), ball.radius, 0, Math.PI*2, true);
+	ctx.arc(page.game.ball.getXPos(), page.game.ball.getYPos(), page.game.ball.radius, 0, Math.PI*2, true);
 	ctx.fillStyle = "rgba(0, 128, 175, 0.8)";
 	ctx.fill();
 	
 	//Draw dragon
 	ctx.beginPath();
-	ctx.arc(dragon.getXPos(), dragon.getYPos(), dragon.radius, 0, Math.PI*2, true);
+	ctx.arc(page.game.dragon.getXPos(), page.game.dragon.getYPos(), page.game.dragon.radius, 0, Math.PI*2, true);
 	ctx.fillStyle = "rgba(0, 0, 175, 0.8)";
 	ctx.fill();
 }

@@ -5,13 +5,12 @@
 		<meta charset="utf-8" />
 		<script src="main.js"></script>
 		<script>
+			/* global page, particle, event, collision */
 			window.onload = function(){
 				//debugger;
-				cvs = document.getElementById("canvas");
-				ctx = cvs.getContext("2d");
-				dcvs = document.getElementById("dPanel");
-				dctx = dcvs.getContext("2d");
-						
+				page.canvas = document.getElementById("canvas");
+				page.dPanel = document.getElementById("dPanel");
+
 				window.requestAnimationFrame = (function(){
 					//Check for each browser
 					//@paul_irish function
@@ -28,25 +27,26 @@
 				})();
 								
 				//Game objects
-				ball = new particle(10, 10);
-				ball.setPos(100, 50);
-				ball.setVel(0.1, 0.1);
-				dragon = new particle(20, 20);
-				dragon.setPos(300, 100);
-				
-					
-				myEvent = new event(1000, collision, "", "initialize collisions", false);
-				myEvent2 = new event(20000, function(){ball.setPos(250, 250);}, "How you like this?", "teleport", false);
-				myEvent3 = new event(30000, function(){ball.setPos(300, 200); collision();}, "Haha, gotcha!", "teleport again", false);
-				myEvent4 = new event(180000, function(){ball.setPos(50, 50);}, "", "You must be REALLY bored...", false);
-				myEvent5 = new event(3600000, function(){ball.setPos(300,200);}, "", "LOL, seriously?!  No more.", false);
-				
-				timeLine.push(myEvent);
-				timeLine.push(myEvent2);
-				timeLine.push(myEvent3);
-				timeLine.push(myEvent4);
-				timeLine.push(myEvent5);
-				
+				var game = page.game;
+				game.ball = new particle(10, 10);
+				game.ball.setPos(100, 50);
+				game.ball.setVel(0.1, 0.1);
+				game.dragon = new particle(20, 20);
+				game.dragon.setPos(300, 100);
+
+				//Add some events so something actually happens in the "event-based" game.
+				var myEvent = new event(1000, collision, "", "initialize collisions", false);
+				var myEvent2 = new event(20000, function(){game.ball.setPos(250, 250);}, "How you like this?", "teleport", false);
+				var myEvent3 = new event(30000, function(){game.ball.setPos(300, 200); collision();}, "Haha, gotcha!", "teleport again", false);
+				var myEvent4 = new event(180000, function(){game.ball.setPos(50, 50);}, "", "You must be REALLY bored...", false);
+				var myEvent5 = new event(3600000, function(){game.ball.setPos(300,200);}, "", "LOL, seriously?!  No more.", false);
+
+				game.timeLine.push(myEvent);
+				game.timeLine.push(myEvent2);
+				game.timeLine.push(myEvent3);
+				game.timeLine.push(myEvent4);
+				game.timeLine.push(myEvent5);
+
 				nextFrame();
 				
 			}
