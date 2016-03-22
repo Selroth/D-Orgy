@@ -29,14 +29,13 @@ var cleanBlit = true;
 function togglePause(){ paused = !paused; }
 function toggleCleanBlit(){ cleanBlit = !cleanBlit; }
 
-
 function event(time, func, para, desc, timeDependant){
 	if ( !(this instanceof event) ) throw new Error("Constructor called as a function");
 	this.time = time;
 	this.func = func;
 	this.para = para;
 	this.desc = desc;
-	this.timeDependant = timeDependant; 
+	this.timeDependant = timeDependant;
 	this.timeSpent = 0;
 	this.result = undefined;
 }
@@ -44,7 +43,7 @@ function event(time, func, para, desc, timeDependant){
 function particle(mass, radius){
 	if ( !(this instanceof particle) ) throw new Error("Constructor called as a function");
 	this.mass = mass;
-	this.radius = radius;	
+	this.radius = radius;
 	var xPos = 0;
 	var yPos = 0;
 	var xVel = 0;
@@ -65,6 +64,7 @@ function particle(mass, radius){
 		yPos += yVel * dt;
 	}
 }
+
 function checkTimeLine(pTime){
 	//make sure it's an event we're looking at, else purge it till we arrive to an event or exhause the timeline
 	while( !(page.game.timeLine[0] instanceof event) && page.game.timeLine.length > 0){
@@ -74,7 +74,7 @@ function checkTimeLine(pTime){
 	if (page.game.timeLine.length > 0){
 		if (pTime >= page.game.timeLine[0].time) {
 			return true;
-		}	
+		}
 	}
 	return false;
 }
@@ -83,14 +83,14 @@ function nextFrame(){
 	lastRealTime = currentRealTime;
 	currentRealTime = new Date().getTime();
 	deltaRealTime = currentRealTime - lastRealTime;
-	
+
 	if (deltaRealTime > 1000 || paused){ //If over a second has passed, assume the game has been paused.
-		dt = 0; 
+		dt = 0;
 	}else{
 		//Have we arrived at any timeline events?
 		if(checkTimeLine(currentGameTime + deltaRealTime)){ dt = page.game.timeLine[0].time - currentGameTime;
 			}else{ 											dt = deltaRealTime; }
-		
+
 		currentGameTime += dt;
 	}
 	dtHistory.unshift(dt);
@@ -109,7 +109,6 @@ function nextFrame(){
 	requestAnimationFrame(nextFrame);
 }
 
-
 function collision(hitObject){
 	if (hitObject != undefined){
 		x = page.game.ball.getXVel();
@@ -118,7 +117,7 @@ function collision(hitObject){
 		if (hitObject == "top wall" || hitObject == "bottom wall") y = page.game.ball.getYVel() * -1;
 		page.game.ball.setVel(x, y);
 	}
-	
+
 	//find the next collision, if we're moving.
 	if (page.game.ball.getXVel() != 0 || page.game.ball.getYVel() != 0){
 		dx = (page.game.ball.getXVel() < 0) ? page.game.ball.getXPos() : 600 - page.game.ball.getXPos();
@@ -129,7 +128,7 @@ function collision(hitObject){
 		ty = Math.round(dy/Math.abs(page.game.ball.getYVel()));
 		t = (tx < ty) ? tx : ty;
 		hitWall = (tx < ty) ? dxWall : dyWall;
-		
+
 		if (t > 0){
 			var nextCollision = new event(t + currentGameTime, collision, hitWall, "collision", false);
 			page.game.timeLine.push(nextCollision);
@@ -137,9 +136,9 @@ function collision(hitObject){
 		}
 	}
 }
-				
+
 function update(){
-	
+
 	var m = 0.003;
 	var a = Math.atan2(page.game.ball.getYPos() - page.game.dragon.getYPos(), page.game.ball.getXPos() - page.game.dragon.getXPos())
 
@@ -187,7 +186,7 @@ function draw(){
 	}
 	dctx.stroke();
 	dctx.fillText(Math.round(j/dtHistory.length) + "dt", 20, 90);
-	
+
 	//Draw timeline
 	dctx.beginPath(); //Current Time Marker
 	dctx.strokeStyle = "rgba(0, 128, 128, 0.8)";
@@ -195,7 +194,7 @@ function draw(){
 	dctx.lineTo(50, 110);
 	dctx.stroke();
 	dctx.fillText(currentGameTime + "ms", 70, 110);
-	
+
 	dctx.beginPath(); //Second ticks
 	dctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
 	dctx.moveTo(10, 110);
@@ -206,7 +205,7 @@ function draw(){
 		dctx.lineTo(15, y);
 	}
 	dctx.stroke();
-	
+
 	dctx.beginPath(); //Event ticks
 	dctx.strokeStyle = "rgba(0, 0, 255, 0.8)";
 	for (var i=0; i<page.game.timeLine.length; i++){
@@ -217,13 +216,13 @@ function draw(){
 		dctx.fillText(page.game.timeLine[i].desc + ": " + page.game.timeLine[i].para, 25, y);
 	}
 	dctx.stroke();
-	
+
 	//Draw ball
 	ctx.beginPath();
 	ctx.arc(page.game.ball.getXPos(), page.game.ball.getYPos(), page.game.ball.radius, 0, Math.PI*2, true);
 	ctx.fillStyle = "rgba(0, 128, 175, 0.8)";
 	ctx.fill();
-	
+
 	//Draw dragon
 	ctx.beginPath();
 	ctx.arc(page.game.dragon.getXPos(), page.game.dragon.getYPos(), page.game.dragon.radius, 0, Math.PI*2, true);
