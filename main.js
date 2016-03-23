@@ -113,8 +113,8 @@ function nextFrame(){
 
 function collision(hitObject){
 	if (hitObject != undefined){
-		x = page.game.ball.getXVel();
-		y = page.game.ball.getYVel();
+		var x = page.game.ball.getXVel();
+		var y = page.game.ball.getYVel();
 		if (hitObject == "left wall" || hitObject == "right wall") x = page.game.ball.getXVel() * -1;
 		if (hitObject == "top wall" || hitObject == "bottom wall") y = page.game.ball.getYVel() * -1;
 		page.game.ball.setVel(x, y);
@@ -122,14 +122,14 @@ function collision(hitObject){
 
 	//find the next collision, if we're moving.
 	if (page.game.ball.getXVel() != 0 || page.game.ball.getYVel() != 0){
-		dx = (page.game.ball.getXVel() < 0) ? page.game.ball.getXPos() : 600 - page.game.ball.getXPos();
-		dxWall = (page.game.ball.getXVel() < 0) ? "left wall" : "right wall";
-		dy = (page.game.ball.getYVel() < 0) ? page.game.ball.getYPos() : 400 - page.game.ball.getYPos();
-		dyWall = (page.game.ball.getYVel() < 0) ? "top wall" : "bottom wall";
-		tx = Math.round(dx/Math.abs(page.game.ball.getXVel()));
-		ty = Math.round(dy/Math.abs(page.game.ball.getYVel()));
-		t = (tx < ty) ? tx : ty;
-		hitWall = (tx < ty) ? dxWall : dyWall;
+		var dx = (page.game.ball.getXVel() < 0) ? page.game.ball.getXPos() : 600 - page.game.ball.getXPos();
+		var dxWall = (page.game.ball.getXVel() < 0) ? "left wall" : "right wall";
+		var dy = (page.game.ball.getYVel() < 0) ? page.game.ball.getYPos() : 400 - page.game.ball.getYPos();
+		var dyWall = (page.game.ball.getYVel() < 0) ? "top wall" : "bottom wall";
+		var tx = Math.round(dx/Math.abs(page.game.ball.getXVel()));
+		var ty = Math.round(dy/Math.abs(page.game.ball.getYVel()));
+		var t = (tx < ty) ? tx : ty;
+		var hitWall = (tx < ty) ? dxWall : dyWall;
 
 		if (t > 0){
 			var nextCollision = new event(t + currentGameTime, collision, hitWall, "collision", false);
@@ -144,8 +144,8 @@ function update(){
 	var m = 0.003;
 	var a = Math.atan2(page.game.ball.getYPos() - page.game.dragon.getYPos(), page.game.ball.getXPos() - page.game.dragon.getXPos())
 
-	x = m*Math.cos(a);
-	y = m*Math.sin(a);
+	var x = m*Math.cos(a);
+	var y = m*Math.sin(a);
 	page.game.dragon.setAcc(x, y);
 
 	page.game.dragon.tick(dt);
@@ -167,7 +167,7 @@ function draw(){
 	dctx.beginPath();
 	dctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
 	dctx.moveTo(10, 10);
-	j = 0;
+	var j = 0;
 	for (var i=0; i<dRTHistory.length; i++){
 		dctx.moveTo(10+i, 50);
 		dctx.lineTo(10+i, 50-(1000/dRTHistory[i])/2);
@@ -202,7 +202,7 @@ function draw(){
 	dctx.moveTo(10, 110);
 	dctx.lineTo(10, 410);
 	for (var i=0; i<29; i++){
-		y = 120 + (10 * i) - (currentGameTime % 1000)/100;
+		var y = 120 + (10 * i) - (currentGameTime % 1000)/100;
 		dctx.moveTo(5, y);
 		dctx.lineTo(15, y);
 	}
