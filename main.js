@@ -44,34 +44,6 @@ function event(time, func, para, desc, timeDependant){
 	this.result = undefined;
 }
 
-function particle(mass, radius, dampingFactor){
-	if ( !(this instanceof particle) ) throw new Error("Constructor called as a function");
-	this.mass = mass;
-	this.radius = radius;
-	this.damping = dampingFactor || 1.0;
-	var xPos = 0;
-	var yPos = 0;
-	var xVel = 0;
-	var yVel = 0;
-	var xAcc = 0;
-	var yAcc = 0;
-	this.setPos = function (x, y) {xPos = x; yPos = y;};
-	this.getXPos = function () {return xPos;};
-	this.getYPos = function () {return yPos;};
-	this.setVel = function (x, y) {xVel = x; yVel = y;};
-	this.getXVel = function () {return xVel;};
-	this.getYVel = function () {return yVel;};
-	this.setAcc = function (x, y) {xAcc = x; yAcc = y;};
-	this.tick = function (dt){
-		xVel += xAcc * dt;
-		yVel += yAcc * dt;
-		xVel *= this.damping;
-		yVel *= this.damping;
-		xPos += xVel * dt;
-		yPos += yVel * dt;
-	};
-}
-
 function checkTimeLine(pTime){
 	//make sure it's an event we're looking at, else purge it till we arrive to an event or exhause the timeline
 	while( !(page.game.timeLine[0] instanceof event) && page.game.timeLine.length > 0){
@@ -260,10 +232,10 @@ function draw(){
 
 		//Game objects
 		var game = page.game;
-		game.ball = new particle(10, 10, 1.0);
+		game.ball = new window.Particle(10, 10, 1.0);
 		game.ball.setPos(100, 50);
 		game.ball.setVel(0.1, 0.1);
-		game.dragon = new particle(20, 20, 0.999);
+		game.dragon = new window.Particle(20, 20, 0.999);
 		game.dragon.setPos(300, 100);
 
 		//Add some events so something actually happens in the "event-based" game.
