@@ -27,10 +27,10 @@
 
 				//Game objects
 				var game = page.game;
-				game.ball = new particle(10, 10);
+				game.ball = new particle(10, 10, 1.0);
 				game.ball.setPos(100, 50);
 				game.ball.setVel(0.1, 0.1);
-				game.dragon = new particle(20, 20);
+				game.dragon = new particle(20, 20, 0.999);
 				game.dragon.setPos(300, 100);
 
 				//Add some events so something actually happens in the "event-based" game.

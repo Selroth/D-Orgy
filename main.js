@@ -42,10 +42,11 @@ function event(time, func, para, desc, timeDependant){
 	this.result = undefined;
 }
 
-function particle(mass, radius){
+function particle(mass, radius, dampingFactor){
 	if ( !(this instanceof particle) ) throw new Error("Constructor called as a function");
 	this.mass = mass;
 	this.radius = radius;
+	this.damping = dampingFactor || 1.0;
 	var xPos = 0;
 	var yPos = 0;
 	var xVel = 0;
@@ -62,6 +63,8 @@ function particle(mass, radius){
 	this.tick = function (dt){
 		xVel += xAcc * dt;
 		yVel += yAcc * dt;
+		xVel *= this.damping;
+		yVel *= this.damping;
 		xPos += xVel * dt;
 		yPos += yVel * dt;
 	}
