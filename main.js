@@ -55,13 +55,13 @@ function particle(mass, radius, dampingFactor){
 	var yVel = 0;
 	var xAcc = 0;
 	var yAcc = 0;
-	this.setPos = function (x, y) {xPos = x; yPos = y;}
-	this.getXPos = function () {return xPos;}
-	this.getYPos = function () {return yPos;}
-	this.setVel = function (x, y) {xVel = x; yVel = y;}
-	this.getXVel = function () {return xVel;}
-	this.getYVel = function () {return yVel;}
-	this.setAcc = function (x, y) {xAcc = x; yAcc = y;}
+	this.setPos = function (x, y) {xPos = x; yPos = y;};
+	this.getXPos = function () {return xPos;};
+	this.getYPos = function () {return yPos;};
+	this.setVel = function (x, y) {xVel = x; yVel = y;};
+	this.getXVel = function () {return xVel;};
+	this.getYVel = function () {return yVel;};
+	this.setAcc = function (x, y) {xAcc = x; yAcc = y;};
 	this.tick = function (dt){
 		xVel += xAcc * dt;
 		yVel += yAcc * dt;
@@ -69,7 +69,7 @@ function particle(mass, radius, dampingFactor){
 		yVel *= this.damping;
 		xPos += xVel * dt;
 		yPos += yVel * dt;
-	}
+	};
 }
 
 function checkTimeLine(pTime){
@@ -147,7 +147,7 @@ function collision(hitObject){
 function update(){
 
 	var m = 0.003;
-	var a = Math.atan2(page.game.ball.getYPos() - page.game.dragon.getYPos(), page.game.ball.getXPos() - page.game.dragon.getXPos())
+	var a = Math.atan2(page.game.ball.getYPos() - page.game.dragon.getYPos(), page.game.ball.getXPos() - page.game.dragon.getXPos());
 
 	var x = m*Math.cos(a);
 	var y = m*Math.sin(a);
@@ -216,7 +216,7 @@ function draw(){
 	dctx.beginPath(); //Event ticks
 	dctx.strokeStyle = "rgba(0, 0, 255, 0.8)";
 	for (var i=0; i<page.game.timeLine.length; i++){
-		y = 110 + (page.game.timeLine[i].time-currentGameTime)/100
+		y = 110 + (page.game.timeLine[i].time-currentGameTime)/100;
 		dctx.moveTo(2, y);
 		dctx.lineTo(25, y);
 		dctx.fillStyle = "rgba(0, 0, 0, 0.2)";
@@ -280,5 +280,5 @@ function draw(){
 		game.timeLine.push(myEvent5);
 
 		nextFrame();
-	}
+	};
 })();
