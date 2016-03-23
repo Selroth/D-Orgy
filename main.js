@@ -1,3 +1,5 @@
+"use strict";
+
 var page = {
 	canvas: null,
 	dPanel: null,
