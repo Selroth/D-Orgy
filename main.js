@@ -234,3 +234,49 @@ function draw(){
 	ctx.fillStyle = "rgba(0, 0, 175, 0.8)";
 	ctx.fill();
 }
+
+// This is the initialization function
+(function() {
+	window.onload = function(){
+		//debugger;
+		page.canvas = document.getElementById("canvas");
+		page.dPanel = document.getElementById("dPanel");
+
+		window.requestAnimationFrame = (function(){
+			//Check for each browser
+			//@paul_irish function
+			//Globalises this function to work on any browser as each browser has a different namespace for this
+			return  window.requestAnimationFrame       ||  //Chromium
+					window.webkitRequestAnimationFrame ||  //Webkit
+					window.mozRequestAnimationFrame    || //Mozilla Geko
+					window.oRequestAnimationFrame      || //Opera Presto
+					window.msRequestAnimationFrame     || //IE Trident?
+					function(callback, element){ //Fallback function
+						window.setTimeout(callback, 1000/60);
+					};
+		})();
+
+		//Game objects
+		var game = page.game;
+		game.ball = new particle(10, 10, 1.0);
+		game.ball.setPos(100, 50);
+		game.ball.setVel(0.1, 0.1);
+		game.dragon = new particle(20, 20, 0.999);
+		game.dragon.setPos(300, 100);
+
+		//Add some events so something actually happens in the "event-based" game.
+		var myEvent = new event(1000, collision, "", "initialize collisions", false);
+		var myEvent2 = new event(20000, function(){game.ball.setPos(250, 250);}, "How you like this?", "teleport", false);
+		var myEvent3 = new event(30000, function(){game.ball.setPos(300, 200); collision();}, "Haha, gotcha!", "teleport again", false);
+		var myEvent4 = new event(180000, function(){game.ball.setPos(50, 50);}, "", "You must be REALLY bored...", false);
+		var myEvent5 = new event(3600000, function(){game.ball.setPos(300,200);}, "", "LOL, seriously?!  No more.", false);
+
+		game.timeLine.push(myEvent);
+		game.timeLine.push(myEvent2);
+		game.timeLine.push(myEvent3);
+		game.timeLine.push(myEvent4);
+		game.timeLine.push(myEvent5);
+
+		nextFrame();
+	}
+})();
