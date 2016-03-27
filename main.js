@@ -57,6 +57,7 @@ function checkTimeLine(pTime){
 	}
 	return false;
 }
+
 function nextFrame(){
 	//What time is it, and how much time has passed?
 	lastRealTime = currentRealTime;
@@ -66,17 +67,20 @@ function nextFrame(){
 	if (deltaRealTime > 1000 || paused){ //If over a second has passed, assume the game has been paused.
 		dt = 0;
 	}else{
-		//Have we arrived at any timeline events?
+		//Have we arrived at any timeline events?  If so, increment time to exactly the trigger time of the next event.
 		if(checkTimeLine(currentGameTime + deltaRealTime)){ dt = page.game.timeLine[0].time - currentGameTime;
 			}else{ 											dt = deltaRealTime; }
 
 		currentGameTime += dt;
 	}
+
+	//Update our graphs.
 	dtHistory.unshift(dt);
 	dtHistory.pop();
 	dRTHistory.unshift(deltaRealTime);
 	dRTHistory.pop();
 
+	//Execute any events
 	while(checkTimeLine(currentGameTime)){
 		var currentEvent = page.game.timeLine.shift();
 		currentEvent.func(currentEvent.para);
@@ -88,10 +92,15 @@ function nextFrame(){
 	requestAnimationFrame(nextFrame);
 }
 
+//This function is called by the event handler when the event is a collision.  It handles the collision and detects/enqueues the next collision in the system.
 function collision(hitObject){
+
+	//Have the collision take effect on the ball.
 	if (hitObject != undefined){
 		var x = page.game.ball.getXVel();
 		var y = page.game.ball.getYVel();
+
+		//Only the ball and the walls are colliable objects for the time being.
 		if (hitObject == "left wall" || hitObject == "right wall") x = page.game.ball.getXVel() * -1;
 		if (hitObject == "top wall" || hitObject == "bottom wall") y = page.game.ball.getYVel() * -1;
 		page.game.ball.setVel(x, y);
@@ -238,19 +247,21 @@ function draw(){
 		game.dragon = new window.Particle(20, 20, 0.999);
 		game.dragon.setPos(300, 100);
 
-		//Add some events so something actually happens in the "event-based" game.
+		//Build some events so something actually happens in the "event-based" game.
 		var myEvent = new event(1000, collision, "", "initialize collisions", false);
 		var myEvent2 = new event(20000, function(){game.ball.setPos(250, 250);}, "How you like this?", "teleport", false);
 		var myEvent3 = new event(30000, function(){game.ball.setPos(300, 200); collision();}, "Haha, gotcha!", "teleport again", false);
 		var myEvent4 = new event(180000, function(){game.ball.setPos(50, 50);}, "", "You must be REALLY bored...", false);
 		var myEvent5 = new event(3600000, function(){game.ball.setPos(300,200);}, "", "LOL, seriously?!  No more.", false);
 
+		//Add the events to the timeline
 		game.timeLine.push(myEvent);
 		game.timeLine.push(myEvent2);
 		game.timeLine.push(myEvent3);
 		game.timeLine.push(myEvent4);
 		game.timeLine.push(myEvent5);
 
+		//That's enough foreplay - let's get this show on the road!  First frame, here we come...
 		nextFrame();
 	};
 })();
