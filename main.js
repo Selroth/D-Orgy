@@ -216,6 +216,20 @@ function draw(){
 	ctx.arc(page.game.dragon.getXPos(), page.game.dragon.getYPos(), page.game.dragon.radius, 0, Math.PI*2, true);
 	ctx.fillStyle = "rgba(0, 0, 175, 0.8)";
 	ctx.fill();
+
+	//draw grid
+	ctx.lineWidth = 1;
+	ctx.beginPath();
+	ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+	for(var x = 0; x < 600; x = x + 10){
+		ctx.moveTo(x, 0);
+		ctx.lineTo(x, 400);
+	}
+	for(var y = 10; y < 400; y = y + 10){
+		ctx.moveTo(0, y);
+		ctx.lineTo(600, y);
+	}
+	ctx.stroke();
 }
 
 // This is the initialization function
