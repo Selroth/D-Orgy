@@ -1,6 +1,5 @@
 "use strict";
-define(["physics", "particle"], function (physics, particle) {
-	var Particle = particle.Particle;
+define(["physics"], function (physics) {
 
 	var page = {
 		canvas: null,
@@ -90,56 +89,8 @@ define(["physics", "particle"], function (physics, particle) {
 
 		physics.integrate(page.game.test, currentGameTime, dt / 1000);
 
-		page.game.ball.tick(dt);
-		update();
 		draw();
 		requestAnimationFrame(nextFrame);
-	}
-
-	//This function is called by the event handler when the event is a collision.  It handles the collision and detects/enqueues the next collision in the system.
-	function collision(hitObject){
-
-		//Have the collision take effect on the ball.
-		if (hitObject != undefined){
-			var x = page.game.ball.getXVel();
-			var y = page.game.ball.getYVel();
-
-			//Only the ball and the walls are colliable objects for the time being.
-			if (hitObject == "left wall" || hitObject == "right wall") x = page.game.ball.getXVel() * -1;
-			if (hitObject == "top wall" || hitObject == "bottom wall") y = page.game.ball.getYVel() * -1;
-			page.game.ball.setVel(x, y);
-		}
-
-		//find the next collision, if we're moving.
-		if (page.game.ball.getXVel() != 0 || page.game.ball.getYVel() != 0){
-			var dx = (page.game.ball.getXVel() < 0) ? page.game.ball.getXPos() : 600 - page.game.ball.getXPos();
-			var dxWall = (page.game.ball.getXVel() < 0) ? "left wall" : "right wall";
-			var dy = (page.game.ball.getYVel() < 0) ? page.game.ball.getYPos() : 400 - page.game.ball.getYPos();
-			var dyWall = (page.game.ball.getYVel() < 0) ? "top wall" : "bottom wall";
-			var tx = Math.round(dx/Math.abs(page.game.ball.getXVel()));
-			var ty = Math.round(dy/Math.abs(page.game.ball.getYVel()));
-			var t = (tx < ty) ? tx : ty;
-			var hitWall = (tx < ty) ? dxWall : dyWall;
-
-			if (t > 0){
-				var nextCollision = new event(t + currentGameTime, collision, hitWall, "collision", false);
-				page.game.timeLine.push(nextCollision);
-				page.game.timeLine.sort(function (a, b){ return a.time - b.time; });
-			}
-		}
-	}
-
-	function update(){
-
-		var m = 0.003;
-		var a = Math.atan2(page.game.ball.getYPos() - page.game.dragon.getYPos(), page.game.ball.getXPos() - page.game.dragon.getXPos());
-
-		var x = m*Math.cos(a);
-		var y = m*Math.sin(a);
-		page.game.dragon.setAcc(x, y);
-
-		page.game.dragon.tick(dt);
-
 	}
 
 	function draw(){
@@ -209,22 +160,10 @@ define(["physics", "particle"], function (physics, particle) {
 		}
 		dctx.stroke();
 
-		//Draw ball
-		ctx.beginPath();
-		ctx.arc(page.game.ball.getXPos(), page.game.ball.getYPos(), page.game.ball.radius, 0, Math.PI*2, true);
-		ctx.fillStyle = "rgba(0, 128, 175, 0.8)";
-		ctx.fill();
-
 		//Draw physics test thing
 		ctx.beginPath();
 		ctx.arc(page.game.test.x + 200, page.game.test.y + 200, 10, 0, Math.PI*2, true);
 		ctx.fillStyle = "rgba(0, 175, 64, 0.8)";
-		ctx.fill();
-
-		//Draw dragon
-		ctx.beginPath();
-		ctx.arc(page.game.dragon.getXPos(), page.game.dragon.getYPos(), page.game.dragon.radius, 0, Math.PI*2, true);
-		ctx.fillStyle = "rgba(0, 0, 175, 0.8)";
 		ctx.fill();
 
 		//draw grid
@@ -264,22 +203,15 @@ define(["physics", "particle"], function (physics, particle) {
 
 		//Game objects
 		var game = page.game;
-		game.ball = new Particle(10, 10, 1.0);
-		game.ball.setPos(100, 50);
-		game.ball.setVel(0.1, 0.1);
-		game.dragon = new Particle(20, 20, 0.999);
-		game.dragon.setPos(300, 100);
 		game.test = {x: 80, y: 0, vx: 0, vy: 0};
 
 		//Build some events so something actually happens in the "event-based" game.
-		var myEvent = new event(1000, collision, "", "initialize collisions", false);
-		var myEvent2 = new event(20000, function(){game.ball.setPos(250, 250);}, "How you like this?", "teleport", false);
-		var myEvent3 = new event(30000, function(){game.ball.setPos(300, 200); collision();}, "Haha, gotcha!", "teleport again", false);
-		var myEvent4 = new event(180000, function(){game.ball.setPos(50, 50);}, "", "You must be REALLY bored...", false);
-		var myEvent5 = new event(3600000, function(){game.ball.setPos(300,200);}, "", "LOL, seriously?!  No more.", false);
+		var myEvent2 = new event(20000, function(){}, "How you like this?", "teleport", false);
+		var myEvent3 = new event(30000, function(){}, "Haha, gotcha!", "teleport again", false);
+		var myEvent4 = new event(180000, function(){}, "", "You must be REALLY bored...", false);
+		var myEvent5 = new event(3600000, function(){}, "", "LOL, seriously?!  No more.", false);
 
 		//Add the events to the timeline
-		game.timeLine.push(myEvent);
 		game.timeLine.push(myEvent2);
 		game.timeLine.push(myEvent3);
 		game.timeLine.push(myEvent4);
