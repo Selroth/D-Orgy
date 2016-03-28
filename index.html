@@ -3,9 +3,9 @@
 	<head>
 		<title>White Sands</title>
 		<meta charset="utf-8" />
-		<script src="app/physics.js"></script>
-		<script src="app/particle.js"></script>
-		<script src="app/main.js"></script>
+		<!-- Note that for bundeling and hosting this yourself, you would most
+		     likely want to host your own copy of require.js -->
+		<script data-main="app/main" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
 	</head>
 	<body>
 		<canvas id="canvas" width="600" height="400" style="border: 1px solid black; left: 0; top: 0;">Your browser does not support Canvas.</canvas>
