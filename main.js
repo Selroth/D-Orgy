@@ -86,6 +86,8 @@ function nextFrame(){
 		currentEvent.func(currentEvent.para);
 	}
 
+	physics.integrate(page.game.test, currentGameTime, dt / 1000);
+
 	page.game.ball.tick(dt);
 	update();
 	draw();
@@ -211,6 +213,12 @@ function draw(){
 	ctx.fillStyle = "rgba(0, 128, 175, 0.8)";
 	ctx.fill();
 
+	//Draw physics test thing
+	ctx.beginPath();
+	ctx.arc(page.game.test.x + 200, page.game.test.y + 200, 10, 0, Math.PI*2, true);
+	ctx.fillStyle = "rgba(0, 175, 64, 0.8)";
+	ctx.fill();
+
 	//Draw dragon
 	ctx.beginPath();
 	ctx.arc(page.game.dragon.getXPos(), page.game.dragon.getYPos(), page.game.dragon.radius, 0, Math.PI*2, true);
@@ -260,6 +268,7 @@ function draw(){
 		game.ball.setVel(0.1, 0.1);
 		game.dragon = new window.Particle(20, 20, 0.999);
 		game.dragon.setPos(300, 100);
+		game.test = {x: 80, y: 0, vx: 0, vy: 0};
 
 		//Build some events so something actually happens in the "event-based" game.
 		var myEvent = new event(1000, collision, "", "initialize collisions", false);
