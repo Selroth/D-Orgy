@@ -1,25 +1,25 @@
 "use strict";
-define({
+define(function(transform) {
     // Returns the linear interpolation between a and b
-    lerp: function(a, b, factor) {
+    function lerp(a, b, factor) {
         return a + factor * (b - a);
-    },
+    }
 
     // A store of all state related to the physics engine
-    context: {
+    var context = {
         objects: [],
         gravity: {x: 0, y: 10},
-    },
+    };
 
-    Derivative: function() {
+    function Derivative() {
         this.dx = 0;
         this.dy = 0;
         this.dvx = 0;
         this.dvy = 0;
-    },
+    }
 
     // Simple spring calculation
-    acceleration: function(state, t) {
+    function acceleration(state, t) {
         var k = 0.3; // Spring constant
         var b = 0.1; // Spring Damping
         var l = 80; // Spring Rest length
@@ -46,9 +46,9 @@ define({
 
         // Divide force with mass to get acceleration
         return {x: fx / mass, y: fy / mass};
-    },
+    }
 
-    evaluate: function(initial, t, dt, derivative) {
+    function evaluate(initial, t, dt, derivative) {
         var state = {
             x: initial.x + derivative.dx*dt,
             y: initial.y + derivative.dy*dt,
@@ -64,11 +64,11 @@ define({
             dvx: acc.x,
             dvy: acc.y,
         };
-    },
+    }
 
     // An implementation of Runge Kutta order 4 integrator
     // see http://gafferongames.com/game-physics/integration-basics/
-    integrate: function(state, t, dt) {
+    function integrate(state, t, dt) {
         var a = this.evaluate(state, t, 0, new this.Derivative());
         var b = this.evaluate(state, t, dt*0.5, a);
         var c = this.evaluate(state, t, dt*0.5, b);
@@ -83,5 +83,10 @@ define({
         state.y = state.y + dydt * dt;
         state.vx = state.vx + dvxdt * dt;
         state.vy = state.vy + dvydt * dt;
-    },
+    }
+
+    return {
+        lerp: lerp,
+        integrate: integrate,
+    };
 });
