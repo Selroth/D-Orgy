@@ -1,5 +1,6 @@
 "use strict";
-define(["physics"], function (physics) {
+define(["linmath", "physics"], function (linmath, physics) {
+	var Vector = linmath.Vector;
 
 	var page = {
 		canvas: null,
@@ -162,7 +163,7 @@ define(["physics"], function (physics) {
 
 		//Draw physics test thing
 		ctx.beginPath();
-		ctx.arc(page.game.test.x + 200, page.game.test.y + 200, 10, 0, Math.PI*2, true);
+		ctx.arc(page.game.test.l.x + 200, page.game.test.l.y + 200, 10, 0, Math.PI*2, true);
 		ctx.fillStyle = "rgba(0, 175, 64, 0.8)";
 		ctx.fill();
 
@@ -203,7 +204,7 @@ define(["physics"], function (physics) {
 
 		//Game objects
 		var game = page.game;
-		game.test = {x: 80, y: 0, vx: 0, vy: 0};
+		game.test = {l: new Vector(80, 0), v: new Vector()};
 
 		//Build some events so something actually happens in the "event-based" game.
 		var myEvent2 = new event(20000, function(){}, "How you like this?", "teleport", false);

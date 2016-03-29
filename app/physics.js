@@ -1,5 +1,7 @@
 "use strict";
-define(function(transform) {
+define(['linmath'], function(linmath) {
+    var Vector = linmath.Vector;
+
     // Returns the linear interpolation between a and b
     function lerp(a, b, factor) {
         return a + factor * (b - a);
@@ -8,14 +10,12 @@ define(function(transform) {
     // A store of all state related to the physics engine
     var context = {
         objects: [],
-        gravity: {x: 0, y: 10},
+        gravity: new Vector(0, 10),
     };
 
     function Derivative() {
-        this.dx = 0;
-        this.dy = 0;
-        this.dvx = 0;
-        this.dvy = 0;
+        this.dl = new Vector();
+        this.dv = new Vector();
     }
 
     // Simple spring calculation
@@ -25,64 +25,65 @@ define(function(transform) {
         var l = 80; // Spring Rest length
 
         // Calculate the unit vector of the spring direction
-        var length = Math.sqrt(state.x * state.x + state.y * state.y);
-        var ux = state.x / length;
-        var uy = state.y / length;
+        var length = state.l.length();
+        var normal = state.l.normal();
 
         // Calculate the force made by the spring
-        var fx = -k * (length-l) * ux;
-        var fy = -k * (length-l) * uy;
+        var f = normal.scalarMul(-k * (length-l));
 
         // Add the dampening force of the spring
-        var dot = state.vx*ux + state.vy*uy;
-        fx += -ux * dot * b;
-        fy += -uy * dot * b;
+        var dot = state.v.dot(normal);
+        f.addThis(normal.scalarMul(-dot * b));
 
         var mass = 1;
 
         // Add gravity
-        fx += this.context.gravity.x * mass;
-        fy += this.context.gravity.y * mass;
+        f.addThis(context.gravity.scalarMul(mass));
 
         // Divide force with mass to get acceleration
-        return {x: fx / mass, y: fy / mass};
+        f.scalarDivThis(mass);
+
+        return f;
     }
 
     function evaluate(initial, t, dt, derivative) {
         var state = {
-            x: initial.x + derivative.dx*dt,
-            y: initial.y + derivative.dy*dt,
-            vx: initial.vx + derivative.dvx*dt,
-            vy: initial.vy + derivative.dvy*dt,
+            l: initial.l.add(derivative.dl.scalarMul(dt)),
+            v: initial.v.add(derivative.dv.scalarMul(dt)),
         };
 
-        var acc = this.acceleration(state, t+dt);
+        var acc = acceleration(state, t+dt);
 
         return {
-            dx: state.vx,
-            dy: state.vy,
-            dvx: acc.x,
-            dvy: acc.y,
+            dl: state.v,
+            dv: acc,
         };
     }
 
     // An implementation of Runge Kutta order 4 integrator
     // see http://gafferongames.com/game-physics/integration-basics/
     function integrate(state, t, dt) {
-        var a = this.evaluate(state, t, 0, new this.Derivative());
-        var b = this.evaluate(state, t, dt*0.5, a);
-        var c = this.evaluate(state, t, dt*0.5, b);
-        var d = this.evaluate(state, t, dt, c);
+        var a = evaluate(state, t, 0, new Derivative());
+        var b = evaluate(state, t, dt*0.5, a);
+        var c = evaluate(state, t, dt*0.5, b);
+        var d = evaluate(state, t, dt, c);
 
-        var dxdt = 1 / 6 * (a.dx + 2*(b.dx + c.dx) + d.dx);
-        var dydt = 1 / 6 * (a.dy + 2*(b.dy + c.dy) + d.dy);
-        var dvxdt = 1 / 6 * (a.dvx + 2*(b.dvx + c.dvx) + d.dvx);
-        var dvydt = 1 / 6 * (a.dvy + 2*(b.dvy + c.dvy) + d.dvy);
+        // Formula is 1 / 6 * (a + 2b + 2c + d)
+        var dldt = b.dl.add(c.dl);
+        dldt.scalarMulThis(2);
+        dldt.addThis(a.dl);
+        dldt.addThis(d.dl);
+        dldt.scalarMulThis(1 / 6);
 
-        state.x = state.x + dxdt * dt;
-        state.y = state.y + dydt * dt;
-        state.vx = state.vx + dvxdt * dt;
-        state.vy = state.vy + dvydt * dt;
+        // Formula is 1 / 6 * (a + 2b + 2c + d)
+        var dvdt = b.dv.add(c.dv);
+        dvdt.scalarMulThis(2);
+        dvdt.addThis(a.dv);
+        dvdt.addThis(d.dv);
+        dvdt.scalarMulThis(1 / 6);
+
+        state.l.addThis(dldt.scalarMul(dt));
+        state.v.addThis(dvdt.scalarMul(dt));
     }
 
     return {
